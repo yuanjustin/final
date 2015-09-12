@@ -194,10 +194,10 @@
                 termspan[i] = $(o).text();
             });
             $.getJSON(
-                    "http://localhost:63342/final/json/class.json",//路径你来决定
-                    {
+                    "http://localhost:8080/dianzibingli/WebServlet",
+                    JSON.stringify({
                         "order": "reorganizationClass", "disease": $('#dieaseName').val(), "term": termspan
-                    },
+                    }),
                     function (result) {
                         $('#support').append('<li ripple><h2>支持<h2></li>');
                         $.each(result[0], function (i, item) {
@@ -291,10 +291,10 @@
             }
 
             $.getJSON(
-                    "http://localhost:63342/final/json/time.json",//路径你来决定
-                    {
+                    "http://localhost:8080/dianzibingli/WebServlet",
+                    JSON.stringify({
                         "order": "reorganizationTime", "combination": data
-                    },
+                    }),
                     function (result) {
                         $.each(result, function (i, item) {
                             addTime(item.time[0].value, item.time[1].value, item.time[2].value, item.time[3].value, item.time[4].value, item.symptom);

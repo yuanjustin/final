@@ -1,8 +1,12 @@
 [
   [
     {
-      "value": 0.1,
-      "unit": "年"
+      "value1": 0.1,
+      "unit1": "年",
+      "value2": 0.1,
+      "unit2": "年",
+      "value3": 0.1,
+      "unit3": "年"
     },
     {
       "value": 135,

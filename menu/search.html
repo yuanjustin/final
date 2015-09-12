@@ -18,7 +18,7 @@
         var disease = new Array();
         $.each(window.parent.searchResult, function (i, item) {
             disease[i] = item.disease;
-            factor[i] = item.factor;
+            factor[i] = parseFloat(item.factor);
         });
         $('#container').highcharts({
             chart: {

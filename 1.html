@@ -15,23 +15,13 @@
 
 <script>
 function ajax(){
-    var word_list = [
-        {text: "ifxoxo.com", weight: 5},
-        {text: "520xmn.com", weight: 4},
-        {text: "jquery", weight: 5},
-        {text: "jqcloud", weight: 2},
-        {text: "ifxoxo1", weight: 1}
-    ];
-    $("#my_words").jQCloud(word_list);
-    $.ajax({type : "POST",
-        url : "http://localhost:63342/final/json/num.json",//路径你来决定
-        data : {
-            "order":"searchtermbyletter","string":"toutong"
-        },
-        success : function(result) {
-                alert(result)
-        }
-    });
+    $.getJSON(
+            "http://localhost:8080/dianzibingli/WebServlet1",
+            "dsfa",
+            function (result) {
+                alert("sdfsdaf"+result);
+            }
+    );
 }
 </script>
 

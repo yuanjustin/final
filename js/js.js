@@ -461,6 +461,10 @@ function TypeKeyPress(event) {
                     addspan();
                 }
                 return true;//不要屏蔽退格键
+
+            case 46:
+                return false;
+
             case 32:
                 if(selectimport==true){
                     Dialog.show(document.querySelector('#selectImportPatient'));
@@ -962,8 +966,8 @@ function clickSpan() {
             $('#unitSelectMenu')[0].hidden = false;
             setDivPosi($('#unitSelectMenu'), getCaretPos());
             $.getJSON(
-                "http://localhost:49163/final/json/num.json",//路径你来决定
-                JSON.toString({
+                "http://localhost:8080/dianzibingli/WebServlet",
+                JSON.stringify({
                     "order": "number", "number": 7
                 })
             ,
@@ -1015,11 +1019,10 @@ function clickSpan() {
             $('#charSelectMenu')[0].hidden = false;
             setDivPosi($('#charSelectMenu'), getCaretPos());
             $.getJSON(
-                "http://localhost:49163/final/json/pinyin.json",//路径你来决定
-                JSON.toString({
+                "http://localhost:8080/dianzibingli/WebServlet",
+                JSON.stringify({
                     "order": "searchtermbyletter", "string": getCaretPos().attr('pinyin')
                 })
-
             ,
                 function (result) {
                     termAjax = result[0];
@@ -1029,8 +1032,8 @@ function clickSpan() {
                     $('#selectBaidu').html('');
                     $('#selectTerm').html('');
                     for (var i = 0; i <= 4; i++) {
-                        $('#selectBaidu').append('<li ripple style="float:left;"><span class=' + baiduAjax[i].class + '>' + baiduAjax[i].value + '</span></li>');
-                        $('#selectTerm').append('<li ripple style="float:left;" ><span class=' + termAjax[i].class + '>' + termAjax[i].value + '</span></li>');
+                        $('#selectBaidu').append('<li ripple style="float:left;"><span pinyin=""' +$('#inputer').val()+'"class=' + baiduAjax[i].class1 + '>' + baiduAjax[i].value + '</span></li>');
+                        $('#selectTerm').append('<li ripple style="float:left;" ><span pinyin=""' +$('#inputer').val()+'"class=' + termAjax[i].class1 + '>' + termAjax[i].value + '</span></li>');
                     }
                 }
             );
@@ -1566,8 +1569,8 @@ function addspan() {
                 //alert( $(addStr).text());
                 inputerChange();
                 $.getJSON(
-                    "http://localhost:49163/final/json/search.json",//路径你来决定
-                    JSON.toString({
+                    "http://localhost:8080/dianzibingli/WebServlet",
+                    JSON.stringify({
                         "order": "search", "keyword": $('#searcher').val()
                     }),
                     function (result) {
@@ -1607,13 +1610,13 @@ function addspan() {
             inputerChange();
             autoBreakLine();
             $.getJSON(
-                "http://localhost:49163/final/json/tips.json",
-                JSON.toString({
+                "json/tips.json",
+                JSON.stringify({
                     "order": "tips", "term": $(addStr).text()
                 }),
                 function (result) {
                     //$(result.tips).insertAfter(getCaretPos());
-                    mySpan = getCaretPos();
+                    mySpan =$('.selectspan');
                     $('#inputmenu')[0].hidden = true;
                     $('#unitSelectMenu')[0].hidden = true;
                     $('#charSelectMenu')[0].hidden = true;
@@ -1626,8 +1629,8 @@ function addspan() {
                         left: mySpan.offset().left + mySpan.outerWidth(true)
                     });
                     $('#tips').html('');
-                    $.each(result.tips, function (i, item) {
-                        $('#tips').append('<li ripple position=' + result.position[i] + '> ' + item + '</li>');
+                    $.each(result[0].tips, function (i, item) {
+                        $('#tips').append('<li ripple position=' + result[0].position[i] + '> ' + item + '</li>');
                     });
                     $('#tips').children(':first').addClass('bg-Grey-100');
                     //for(var j=1;j<=result.position;j++){
@@ -1641,10 +1644,14 @@ function addspan() {
             $('#dk .symptom').each(function (i, item) {
                 //alert(item.innerHTML);
                 $(data).attr("s" + i, item.innerHTML)
+
             });
+            //$(data).attr("s1", "肢端发绀")
+
+            //alert(JSON.stringify(data));
             $.getJSON(
-                "http://localhost:49163/final/json/disease.json",
-                JSON.toString(data),
+                "http://localhost:8080/dianzibingli/WebServlet",
+                JSON.stringify(data),
                 function (result) {
                     disease = result[1];
                     danger = result[0];
@@ -1678,12 +1685,9 @@ function addspan() {
 
                 }
             );
-
-
-
             break;
         case 'numberInput':
-            var addStr = $('#otherNum').find('.bg-Grey-100').children().eq(0).prop("outerHTML") + $('#otherNum').find('.bg-Grey-100').children().eq(1).prop("outerHTML");
+            var addStr = $('#otherNum').find('.bg-Grey-100').children();
             var obj = $('#dk').find('.selectSpan');
             if (obj.hasClass('newspan')) {
                 $(addStr).insertBefore(obj);
@@ -1738,8 +1742,15 @@ function addspan() {
                 $(addStr).insertBefore(obj);
                 setCaretPos(obj);
                 //alert($(addStr).length);
+                if($('#tips').find('.bg-Grey-100').attr('position')==0){//todo
+                    setCaretPos(getCaretPos().prev());
+                }
+                else{
                 for (var j = 1; j <= $(addStr).length-$('#tips').find('.bg-Grey-100').attr('position')+1; j++) {
                     setCaretPos(getCaretPos().prev());
+                }}
+                if($('.selectspan').hasClass('number')){
+                    clickSpan();
                 }
             } else {
                 $(addStr).insertAfter(obj);
@@ -1852,8 +1863,8 @@ function numInputerChange() {
         return;
     }
     $.getJSON(
-        "http://localhost:49163/final/json/num.json",//路径你来决定
-        JSON.toString( {
+        "json/num.json",
+        JSON.stringify( {
             "order": "number", "number": $('#numberInputer').val()
         }),
         function (result) {
@@ -1864,10 +1875,19 @@ function numInputerChange() {
             $('#otherNum').html('');
             for (var i = 0; i <= 4; i++) {
                 if (i <= unit.length - 1) {
-                    $('#mainNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[i][0].value + '</span><span class="unit">' + unit[i][0].unit + '</span></li>');
+                    if('value' in unit[i][0]){
+                        $('#mainNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[i][0].value + '</span><span class="unit">' + unit[i][0].unit + '</span></li>');
+                    }else{
+                        $('#mainNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[i][0].value1 + '</span><span class="unit">' + unit[i][0].unit1 + '</span><span class=number step=1 max=10 min=1>' + unit[i][0].value2 + '</span><span class="unit">' + unit[i][0].unit2 + '</span><span class=number step=1 max=10 min=1>' + unit[i][0].value3 + '</span><span class="unit">' + unit[i][0].unit3 + '</span></li>');
+                    }
                 }
                 if (i <= unit[0].length - 1) {
-                    $('#otherNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[0][i].value + '</span><span class="unit">' + unit[0][i].unit + '</span></li>');
+                    if('value' in unit[0][i]){
+                        $('#otherNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[0][i].value + '</span><span class="unit">' + unit[0][i].unit + '</span></li>');
+                    }else{
+                        $('#otherNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[0][i].value1 + '</span><span class="unit">' + unit[0][i].unit1 + '</span><span class=number step=1 max=10 min=1>' + unit[0][i].value2 + '</span><span class="unit">' + unit[0][i].unit2 + '</span><span class=number step=1 max=10 min=1>' + unit[0][i].value3 + '</span><span class="unit">' + unit[0][i].unit3 + '</span></li>');
+                    }
+                    //$('#otherNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[0][i].value + '</span><span class="unit">' + unit[0][i].unit + '</span></li>');
                 }
             }
             $('#mainNum').children(':first').addClass('bg-Grey-100');
@@ -1887,8 +1907,8 @@ function inputerChange() {
     }
     ;
     $.getJSON(
-        "http://localhost:49163/final/json/pinyin.json",//路径你来决定
-        JSON.toString({
+        "http://localhost:8080/dianzibingli/WebServlet",
+        JSON.stringify({
             "order": "searchtermbyletter", "string": $('#inputer').val()
         })
     ,
@@ -1900,8 +1920,8 @@ function inputerChange() {
             $('#baidu').html('');
             $('#term').html('');
             for (var i = 0; i <= 4; i++) {
-                $('#baidu').append('<li ripple style=" float:left;">' + '<span>' + (i + 1) + '.</span>' + '<span class=' + baiduAjax[i].class + '>' + baiduAjax[i].value + '</span></li>');
-                $('#term').append('<li ripple style=" float:left;">' + '<span>' + (i + 1) + '.</span>' + '<span class=' + termAjax[i].class + '>' + termAjax[i].value + '</span></li>');
+                $('#baidu').append('<li ripple style=" float:left;">' + '<span>' + (i + 1) + '.</span>' + '<span pinyin="' +$('#inputer').val()+'"class=' + baiduAjax[i].class1 + '>' + baiduAjax[i].value + '</span></li>');
+                $('#term').append('<li ripple style=" float:left;">' + '<span>' + (i + 1) + '.</span>' + '<span pinyin="' +$('#inputer').val()+'"class=' + termAjax[i].class1 + '>' + termAjax[i].value + '</span></li>');
             }
             if ($('#inputmenu').offset().left == 0) {
                 $('#inputmenu').offset({top: 20, left: document.body.offsetWidth - $('#inputmenu').outerWidth(true)});
