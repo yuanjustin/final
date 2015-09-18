@@ -216,7 +216,7 @@
             $('#timeline').html('');
             var index = 0;
             var data = new Array();
-            var text = $('#switchModel', window.parent.document).text() != "切换到住院病历" ? $('#xb', window.parent.document) : $('#bs', window.parent.document);
+            var text = $('#switchModel', window.parent.document).text() == "切换到住院病历" ? $('#xb', window.parent.document) : $('#bs', window.parent.document);
             var addItem = {
                 "time": [
                     {
@@ -272,7 +272,11 @@
                                     unit: text.find('span').eq(index).text()
                                 });
                             }
-                            index = index + 2;
+                            if (isDate(text.find('span').eq(index + 2))) {
+                                index = index + 2;
+                            } else {
+                                break;
+                            }
                         }
                     }
                     index++;
