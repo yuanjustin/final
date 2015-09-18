@@ -1742,13 +1742,10 @@ function addspan() {
                 $(addStr).insertBefore(obj);
                 setCaretPos(obj);
                 //alert($(addStr).length);
-                if($('#tips').find('.bg-Grey-100').attr('position')==0){//todo
+
+                for (var j = 0; j <= $(addStr).length-$('#tips').find('.bg-Grey-100').attr('position'); j++) {
                     setCaretPos(getCaretPos().prev());
                 }
-                else{
-                for (var j = 1; j <= $(addStr).length-$('#tips').find('.bg-Grey-100').attr('position')+1; j++) {
-                    setCaretPos(getCaretPos().prev());
-                }}
                 if($('.selectspan').hasClass('number')){
                     clickSpan();
                 }
@@ -1757,7 +1754,7 @@ function addspan() {
                 //if (obj.next().hasClass('endspan')) {
                 //    setCaretPos(obj.next().next());
                 //} else {
-                    setCaretPos(obj.next());
+                    setCaretPos(obj);
                 //}
                 for (var j = 1; j <= $('#tips').find('.bg-Grey-100').attr('position'); j++) {
                     setCaretPos(getCaretPos().next());
@@ -1878,14 +1875,26 @@ function numInputerChange() {
                     if('value' in unit[i][0]){
                         $('#mainNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[i][0].value + '</span><span class="unit">' + unit[i][0].unit + '</span></li>');
                     }else{
-                        $('#mainNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[i][0].value1 + '</span><span class="unit">' + unit[i][0].unit1 + '</span><span class=number step=1 max=10 min=1>' + unit[i][0].value2 + '</span><span class="unit">' + unit[i][0].unit2 + '</span><span class=number step=1 max=10 min=1>' + unit[i][0].value3 + '</span><span class="unit">' + unit[i][0].unit3 + '</span></li>');
+                        var valueindex=1;
+                        var valuestr="";
+                        while('value'+valueindex in unit[i][0]){
+                            valuestr= valuestr +'<span class=number step=1 max=10 min=1>' + $(unit[i][0]).attr('value'+valueindex) + '</span><span class="unit">' + $(unit[i][0]).attr('unit'+valueindex) + '</span>'
+                            valueindex++;
+                        }
+                        $('#mainNum').append('<li ripple>'+valuestr+'</li>');
                     }
                 }
                 if (i <= unit[0].length - 1) {
                     if('value' in unit[0][i]){
                         $('#otherNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[0][i].value + '</span><span class="unit">' + unit[0][i].unit + '</span></li>');
                     }else{
-                        $('#otherNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[0][i].value1 + '</span><span class="unit">' + unit[0][i].unit1 + '</span><span class=number step=1 max=10 min=1>' + unit[0][i].value2 + '</span><span class="unit">' + unit[0][i].unit2 + '</span><span class=number step=1 max=10 min=1>' + unit[0][i].value3 + '</span><span class="unit">' + unit[0][i].unit3 + '</span></li>');
+                        var valueindex=1;
+                        var valuestr="";
+                        while('value'+valueindex in unit[0][i]){
+                            valuestr= valuestr +'<span class=number step=1 max=10 min=1>' + $(unit[0][i]).attr('value'+valueindex) + '</span><span class="unit">' + $(unit[0][i]).attr('unit'+valueindex) + '</span>'
+                            valueindex++;
+                        }
+                        $('#otherNum').append('<li ripple>'+valuestr+'</li>');
                     }
                     //$('#otherNum').append('<li ripple><span class=number step=1 max=10 min=1>' + unit[0][i].value + '</span><span class="unit">' + unit[0][i].unit + '</span></li>');
                 }
